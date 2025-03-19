@@ -15,7 +15,7 @@ This plugin is best used for daily, weekly, monthly etc quests but is easily ada
 
 ### MINECRAFT VERSION
  - API Compatible - Spigot 1.17.1+
- - Latest tested - 1.20
+ - Latest tested - 1.21.4
 
 ---
 
