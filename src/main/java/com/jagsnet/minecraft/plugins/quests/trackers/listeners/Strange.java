@@ -6,6 +6,7 @@ import com.jagsnet.minecraft.plugins.quests.otherStuff.messages.Strings;
 import com.jagsnet.minecraft.plugins.quests.otherStuff.utils.Completion;
 import com.jagsnet.minecraft.plugins.quests.otherStuff.utils.Scroll;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -51,13 +52,12 @@ public class Strange implements Listener {
             ArrayList<String> lore = (ArrayList<String>) player.getInventory().getItemInOffHand().getItemMeta().getLore();
             int length = 2 + mainHandItem.split(" ", 0).length + entity.split(" ", 0).length;
 
-            entity = entity.toLowerCase();
+            entity = entity.toLowerCase().replace("_", " ");
 
             for (int i = 0; i < lore.size(); i++) {
                 String line = Strings.cleanLore(lore.get(i), true, false);
                 if ((line.contains(mainHandItem) &&
-                        line.split(" ", 0).length == (length)) &&
-                        line.contains(" " + entity)) {
+                        line.contains(" " + entity))) {
                     if (Completion.updateNumLine(lore, player, 1, i)) {
                         if (mainHandItem.equalsIgnoreCase("milk") && entity.equalsIgnoreCase("cow")) return;
                         event.getRightClicked().getPersistentDataContainer().set(key, PersistentDataType.LONG, System.currentTimeMillis() + 30000);
@@ -70,14 +70,14 @@ public class Strange implements Listener {
                             case "shear":
                                 is  = new ItemStack(Material.WHITE_WOOL);
                                 im = is.getItemMeta();
-                                im.setDisplayName(b + StringUtils.capitalize(entity) + " Wool");
+                                im.setDisplayName(b + WordUtils.capitalize(entity) + " Wool");
                                 is.setItemMeta(im);
                                 event.getRightClicked().getWorld().dropItem(event.getRightClicked().getLocation(), is);
                                 break;
                             case "milk":
                                 is  = new ItemStack(Material.MILK_BUCKET);
                                 im = is.getItemMeta();
-                                im.setDisplayName(b + StringUtils.capitalize(entity) + " Milk");
+                                im.setDisplayName(b + WordUtils.capitalize(entity) + " Milk");
                                 is.setItemMeta(im);
                                 player.getInventory().setItemInMainHand(is);
                                 break;
