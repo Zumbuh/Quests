@@ -10,6 +10,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -73,6 +74,7 @@ public class Strange implements Listener {
                                 im.setDisplayName(b + WordUtils.capitalize(entity) + " Wool");
                                 is.setItemMeta(im);
                                 event.getRightClicked().getWorld().dropItem(event.getRightClicked().getLocation(), is);
+                                player.playSound(player.getLocation(), Sound.ENTITY_SHEEP_SHEAR, 1F, 1F);
                                 break;
                             case "milk":
                                 is  = new ItemStack(Material.MILK_BUCKET);
@@ -80,6 +82,7 @@ public class Strange implements Listener {
                                 im.setDisplayName(b + WordUtils.capitalize(entity) + " Milk");
                                 is.setItemMeta(im);
                                 player.getInventory().setItemInMainHand(is);
+                                player.playSound(player.getLocation(), Sound.ENTITY_COW_MILK, 1F, 1F);
                                 break;
                             default: break;
                         }
