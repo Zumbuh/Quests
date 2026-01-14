@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class Commands implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled()) { return; }
         Player player = event.getPlayer();
         if (Scroll.isScrollOff(player)) {
 
