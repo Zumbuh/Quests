@@ -41,7 +41,6 @@ public final class Quests extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Strange(), this);
         getServer().getPluginManager().registerEvents(new Chat(), this);
         getServer().getPluginManager().registerEvents(new MoveToOffhand(), this);
-        getServer().getPluginManager().registerEvents(new Login(), this);
 
         // Schedule check for player movement
         BukkitScheduler scheduler = getServer().getScheduler();
