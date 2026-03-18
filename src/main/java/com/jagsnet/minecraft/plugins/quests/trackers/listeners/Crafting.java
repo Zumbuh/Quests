@@ -37,7 +37,7 @@ public class Crafting implements Listener {
 
                 if ((event.getCursor().getType() != Material.AIR) && (event.getCursor().getMaxStackSize() == event.getCursor().getAmount())) return;
                 if ((event.getCursor().getType() != event.getRecipe().getResult().getType()) && (event.getCursor().getType() != Material.AIR)) return;
-                if (event.getClick() == ClickType.DROP && event.getCursor().getType() != Material.AIR) return;
+                if ((event.getClick() == ClickType.DROP || event.getClick() == ClickType.CONTROL_DROP) && event.getCursor().getType() != Material.AIR) return;
 
                 ItemStack stack = event.getRecipe().getResult().clone();
                 String itemName = stack.getType().toString();
