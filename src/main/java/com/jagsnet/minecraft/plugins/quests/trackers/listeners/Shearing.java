@@ -35,7 +35,7 @@ public class Shearing implements Listener {
 
             for (int i = 0; i < lore.size(); i++) {
                 String line = Strings.cleanLore(lore.get(i), true, false);
-                if ((line.contains(" " + entity) && line.contains("shear"))) {
+                if ((line.contains(" " + entity) && line.split(" ", 0).length == entity.split(" ", 0).length + 3) && line.contains("shear")) {
                     if (Completion.updateNumLine(lore, player, 1, i)) {
                         return;
                     }
