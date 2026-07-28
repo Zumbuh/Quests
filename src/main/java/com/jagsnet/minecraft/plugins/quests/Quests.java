@@ -91,6 +91,8 @@ public final class Quests extends JavaPlugin {
         // For using persistent data container, don't touch k thx
         instance = this;
 
+        Permissions.register();
+
         Configs.setupLists();
         Configs.setupGlobal();
         setAuto();

@@ -203,6 +203,19 @@ public class Generators implements CommandExecutor {
                 scrollMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, player.getUniqueId().toString());
             }
         }
+        if (Configs.get().getConfigurationSection(args[1] + ".permission-lines") != null) {
+            String permissionLines = "";
+            for (String line : Configs.get().getConfigurationSection(args[1] + ".permission-lines").getKeys(false)) {
+                String perm = Configs.get().getString(args[1] + ".permission-lines." + line);
+                if (permissionLines.equalsIgnoreCase("")) {
+                    permissionLines = line + "|" + perm;
+                } else {
+                    permissionLines = permissionLines + "," + line + "|" + perm;
+                }
+            }
+            key = new NamespacedKey(Quests.getInstance(), "permissionLines");
+            scrollMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, permissionLines);
+        }
 
         String[] configs = {"movement", "coords", "locked", "rank", "region", "autocomplete", "randomTimer", "random"};
 

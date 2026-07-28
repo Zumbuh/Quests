@@ -4,7 +4,7 @@ main: com.jagsnet.minecraft.plugins.quests.Quests
 api-version: 1.21.11
 authors: [ Melon ]
 description: Quests for AC
-depend: [WorldGuard]
+depend: [WorldGuard, LuckPerms]
 commands:
   quest:
     description: Base command for the quest plugin.
