@@ -809,75 +809,75 @@ plugins
 
 # Changelog
 ### 1.10
-Added the ability for a quest to display in the scoreboard slot. This can be managed by players using `/quest display`   
-Added the `hiddenModifiers` option to allow you to attach modifiers that users cannot see   
-Added nautilus riding tracking and allow tracking of different nautilus types   
-Added happy ghast riding tracking  
-Added new modifiers allowing you to force people to have to ride something or wear specific armour while completing a quest  
-Changed `cquest` commands to work while the quest is in a players main hand  
-Added tracking traveling distances on different horse types. Things like `donkey` `camel` and more count as horses  
-Fixed a problem stopping biome objectives from being able to be coloured  
-Fixed a problem stopping the objective text after the `: ` from being able to be coloured  
-Fixed a problem allowing shearing and milking of ghasts counting towards objectives for happy ghasts  
-Fixed a problem where chat objectives would cause a chat error and cause the scroll to disappear if the objective was the last one  
-Changed from using the Minecraft jump stat for tracking jumps to a PaperMC playerJumpEvent listener
-Moved to PaperAPI - @Zumbuh
-Fixed and did some other cool stuff - @Zumbuh
+- Added the ability for a quest to display in the scoreboard slot. This can be managed by players using `/quest display`   
+- Added the `hiddenModifiers` option to allow you to attach modifiers that users cannot see   
+- Added nautilus riding tracking and allow tracking of different nautilus types   
+- Added happy ghast riding tracking  
+- Added new modifiers allowing you to force people to have to ride something or wear specific armour while completing a quest  
+- Changed `cquest` commands to work while the quest is in a players main hand  
+- Added tracking traveling distances on different horse types. Things like `donkey` `camel` and more count as horses  
+- Fixed a problem stopping biome objectives from being able to be coloured  
+- Fixed a problem stopping the objective text after the `: ` from being able to be coloured  
+- Fixed a problem allowing shearing and milking of ghasts counting towards objectives for happy ghasts  
+- Fixed a problem where chat objectives would cause a chat error and cause the scroll to disappear if the objective was the last one  
+- Changed from using the Minecraft jump stat for tracking jumps to a PaperMC playerJumpEvent listener  
+- Moved to PaperAPI - @Zumbuh  
+- Fixed and did some other cool stuff - @Zumbuh  
 ### 1.9
-Added the ability to control which biomes quests can be completed in.
+- Added the ability to control which biomes quests can be completed in.
 ### 1.8.4
-Added the ability to change the permissions command used to give players permissions to remove the requirement for luckperms.
+- Added the ability to change the permissions command used to give players permissions to remove the requirement for luckperms.
 ### 1.8.2  
-Added a thing to allow people to right click quests into their offhand so that bedrock players can offhand quests.
+- Added a thing to allow people to right click quests into their offhand so that bedrock players can offhand quests.
 ### 1.8.1  
-Allowed for colour codes and `&k` almost anywhere in a quest objective line.  
-Fixed problem allowing for mining stone to count as mining glowstone, sandstone, etc.  
+- Allowed for colour codes and `&k` almost anywhere in a quest objective line.  
+- Fixed problem allowing for mining stone to count as mining glowstone, sandstone, etc.  
 ### 1.8
-Added modifiers  
-Allowed for "movement" objectives to be added via lists
+- Added modifiers  
+- Allowed for "movement" objectives to be added via lists
 ### 1.7.2
-Added “secretCooldown” as an optional configuration option. If not set it defaults to 60s. Takes milliseconds as an input.
+- Added “secretCooldown” as an optional configuration option. If not set it defaults to 60s. Takes milliseconds as an input.
 ### 1.7.0
-Added chat tracking
+- Added chat tracking
 ### 1.6.1
-Added bells rung to stats trackers  
-Allowed randomized quests to use nested lists
+- Added bells rung to stats trackers  
+- Allowed randomized quests to use nested lists
 ### 1.6.0
-Added coords tracker
+- Added coords tracker
 ### 1.5.0
-Added custom quest commands which can be defined. This allows players to collect scrolls anywhere using predefined commands with predefined cooldowns. These commands are defined as shown below in the global config file.  
-Refactored generation code to allow other things to generate quests rather than just /gquest  
-Added /quest list which lists all available quests to them as defined in the global config  
+- Added custom quest commands which can be defined. This allows players to collect scrolls anywhere using predefined commands with predefined cooldowns. These commands are defined as shown below in the global config file.  
+- Refactored generation code to allow other things to generate quests rather than just /gquest  
+- Added /quest list which lists all available quests to them as defined in the global config  
 ### 1.4.3
-Added /aquest setwho <UUID> to be able to manually set UUIDs to scrolls.  
-Refactored a bunch of functions to use MLib and so now quests requires MLib to be installed.  
+- Added /aquest setwho <UUID> to be able to manually set UUIDs to scrolls.  
+- Refactored a bunch of functions to use MLib and so now quests requires MLib to be installed.  
 ### 1.4.1
-Added <date> placeholder for quest generation and reward lines.  
-Added the ability to force /aquest claim to bypass permission checks by doing /aquest claim force  
+- Added <date> placeholder for quest generation and reward lines.  
+- Added the ability to force /aquest claim to bypass permission checks by doing /aquest claim force  
 ### 1.4
-Added shearing and milking for all mobs while a quest has an objective for it. Shearing and milking through this method has a 30 second cooldown.
+- Added shearing and milking for all mobs while a quest has an objective for it. Shearing and milking through this method has a 30 second cooldown.
 ### 1.3.1
-Fixed crafting objective bug
+- Fixed crafting objective bug
 ### 1.3
-Commands /quest expiry and /quest secret now work with the scroll in offhand  
-Added a new quest type, quest paths. This allows you to make branching questlines  
-Added /quest path <num> command  
-Added /aquest help and /aquest auto <true|false>  
-Added autocomplete config option  
-Added a global config file and first global config option  
-Commands run by quests are now logged in the console  
+- Commands /quest expiry and /quest secret now work with the scroll in offhand  
+- Added a new quest type, quest paths. This allows you to make branching questlines  
+- Added /quest path <num> command  
+- Added /aquest help and /aquest auto <true|false>  
+- Added autocomplete config option  
+- Added a global config file and first global config option  
+- Commands run by quests are now logged in the console  
 ### 1.2
-Scrolls will generate into your offhand if available  
-Added claimMessage config option for sending a message when the scroll is claimed  
-Added noverbose option to /gquest which will cause players not to receive feedback that they have already collected a scroll when trying to collect the same one twice  
-Removed deprecated add and delete reward commands  
-Updated /aquest rewardlist to actually work  
+- Scrolls will generate into your offhand if available  
+- Added claimMessage config option for sending a message when the scroll is claimed  
+- Added noverbose option to /gquest which will cause players not to receive feedback that they have already collected a scroll when trying to collect the same one twice  
+- Removed deprecated add and delete reward commands  
+- Updated /aquest rewardlist to actually work  
 ### 1.1.1
-Scrolls can now be claimed from your offhand
+- Scrolls can now be claimed from your offhand
 ### 1.1
-Added extra message options in the scroll configs allowing you to specify a name that the message is coming from and a colour for that name
+- Added extra message options in the scroll configs allowing you to specify a name that the message is coming from and a colour for that name
 ### 1
-Added /aquest version  
-Added permission config option allowing you to prevent people from collecting the scroll if they already have the permission. The config option when set gives people the permission  
-Added force option for /gquest allowing you to bypass permission config option  
-Added inventory space checks for quests with ultrasecrets  
+- Added /aquest version  
+- Added permission config option allowing you to prevent people from collecting the scroll if they already have the permission. The config option when set gives people the permission  
+- Added force option for /gquest allowing you to bypass permission config option  
+- Added inventory space checks for quests with ultrasecrets  
