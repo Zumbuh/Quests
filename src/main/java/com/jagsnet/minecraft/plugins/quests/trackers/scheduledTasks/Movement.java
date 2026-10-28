@@ -7,6 +7,7 @@ import com.jagsnet.minecraft.plugins.quests.otherStuff.utils.Scroll;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,9 +24,10 @@ public class Movement {
                 ArrayList<String> lore = (ArrayList<String>) p.getInventory().getItemInOffHand().getItemMeta().getLore();
                 
                 for (int i = 0; i < lore.size(); i++) {
-                    if ((lore.get(i).toLowerCase().contains("visit the " + entity.toLowerCase()) &&
-                            (lore.get(i).split(" ", 0).length == entity.split(" ", 0).length + 4)) &&
-                            !lore.get(i).contains("Complete")) {
+                    String line = Strings.cleanLore(lore.get(i), false, false);
+                    if ((line.toLowerCase().contains("visit the " + entity.toLowerCase()) &&
+                            (line.split(" ", 0).length == entity.split(" ", 0).length + 4)) &&
+                            !line.contains("Complete")) {
                         if (Completion.updateTxtLine(lore, p, i, true)) {
                         }
                     }
@@ -57,6 +59,10 @@ public class Movement {
                             case "cake":
                                 key = new NamespacedKey(Quests.getInstance(), "cake");
                                 meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.CAKE_SLICES_EATEN));
+                                break;
+                            case "nautilus":
+                                key = new NamespacedKey(Quests.getInstance(), "nautilus");
+                                meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.NAUTILUS_ONE_CM));
                                 break;
                             case "shield":
                                 key = new NamespacedKey(Quests.getInstance(), "shield");
@@ -110,10 +116,10 @@ public class Movement {
                                 key = new NamespacedKey(Quests.getInstance(), "strider");
                                 meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.STRIDER_ONE_CM));
                                 break;
-                            case "jump":
-                                key = new NamespacedKey(Quests.getInstance(), "jump");
-                                meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.JUMP));
-                                break;
+//                            case "jump":
+//                                key = new NamespacedKey(Quests.getInstance(), "jump");
+//                                meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.JUMP));
+//                                break;
                             case "ring":
                                 key = new NamespacedKey(Quests.getInstance(), "ring");
                                 meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.BELL_RING));
@@ -133,6 +139,10 @@ public class Movement {
                             case "raidc":
                                 key = new NamespacedKey(Quests.getInstance(), "raidc");
                                 meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.RAID_WIN));
+                                break;
+                            case "ghast":
+                                key = new NamespacedKey(Quests.getInstance(), "ghast");
+                                meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, p.getStatistic(Statistic.HAPPY_GHAST_ONE_CM));
                                 break;
                             default: break;
                         }
@@ -154,6 +164,9 @@ public class Movement {
                     switch (s) {
                         case "cake":
                             setStat(p, "cake", meta, Statistic.CAKE_SLICES_EATEN, "eat", "slices of cake", 1);
+                            break;
+                        case "nautilus":
+                            setStat(p, "nautilus", meta, Statistic.NAUTILUS_ONE_CM, "travel", "blocks on a nautilus", 100);
                             break;
                         case "shield":
                             setStat(p, "shield", meta, Statistic.DAMAGE_BLOCKED_BY_SHIELD, "block", "damage with a shield", 1);
@@ -194,9 +207,9 @@ public class Movement {
                         case "strider":
                             setStat(p, "strider", meta, Statistic.STRIDER_ONE_CM, "travel", "blocks on a strider", 1000);
                             break;
-                        case "jump":
-                            setStat(p, "jump", meta, Statistic.JUMP, "jump", "time", 1);
-                            break;
+//                        case "jump":
+//                            setStat(p, "jump", meta, Statistic.JUMP, "jump", "time", 1);
+//                            break;
                         case "ring":
                             setStat(p, "ring", meta, Statistic.BELL_RING, "ring", "bell", 1);
                             break;
@@ -211,6 +224,9 @@ public class Movement {
                             break;
                         case "raidc":
                             setStat(p, "raidc", meta, Statistic.RAID_WIN, "beat", "raid", 1);
+                            break;
+                        case "ghast":
+                            setStat(p, "ghast", meta, Statistic.HAPPY_GHAST_ONE_CM, "travel", "blocks on a happy ghast", 1000);
                             break;
                         default: break;
                     }
@@ -245,6 +261,13 @@ public class Movement {
             }
         }
         ArrayList<String> lore = (ArrayList<String>) p.getInventory().getItemInOffHand().getItemMeta().getLore();
+
+        if (e1 == "travel" && (e2 == "blocks on a horse" || e2 == "blocks on a nautilus" || e2 == "blocks on a strider" || e2 == "blocks on a pig")) {
+            Entity entity = p.getVehicle();
+            if (entity != null) {
+                e2 = "blocks on a " + entity.getType().name().toLowerCase().replace("_", " ");
+            }
+        }
 
         for (int i = 0; i < lore.size(); i++) {
             String line = Strings.cleanLore(lore.get(i), false, false);

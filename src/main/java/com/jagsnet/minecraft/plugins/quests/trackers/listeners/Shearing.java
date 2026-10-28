@@ -7,6 +7,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import java.util.ArrayList;
@@ -33,9 +34,27 @@ public class Shearing implements Listener {
 
             entity = entity.toLowerCase().replace("_", " ");
 
+            CreatureSpawnEvent.SpawnReason spawnReason = event.getEntity().getEntitySpawnReason();
+
             for (int i = 0; i < lore.size(); i++) {
                 String line = Strings.cleanLore(lore.get(i), true, false);
-                if ((line.contains(" " + entity) && line.split(" ", 0).length == entity.split(" ", 0).length + 3) && line.contains("shear")) {
+
+                // wild mobs
+                if (line.contains(" wild ") &&
+                        (line.contains(" " + entity) &&
+                        line.split(" ", 0).length == entity.split(" ", 0).length + 4) &&
+                        line.contains("shear")) {
+                    if (Completion.isWild(spawnReason)) {
+                        if (Completion.updateNumLine(lore, player, 1, i)) {
+                            return;
+                        }
+                    }
+                }
+
+                // All mobs
+                if ((line.contains(" " + entity) &&
+                        line.split(" ", 0).length == entity.split(" ", 0).length + 3) &&
+                        line.contains("shear")) {
                     if (Completion.updateNumLine(lore, player, 1, i)) {
                         return;
                     }

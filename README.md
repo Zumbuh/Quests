@@ -1,21 +1,21 @@
 # Quests Documentation
 
 A simple quests plugin for Spigot based Minecraft servers.
-The plugin does not track completed quests and is item based.
-It has permissions features to track quest completion if required. 
+The plugin does not inherently track completed quests but can do through permissions.
+Quests are item based allowing people to trade them or lose them. 
 This plugin is best used for daily, weekly, monthly etc quests but is easily adaptable allowing for complex quest lines with branching paths, secrets and support for a wide array of objectives.
 
 ---
 
 ### REQUIRED PLUGINS
 - WorldGuard - 7.05+
-- Luckperms - any version (not required, just recommended otherwise permissions features wont work)
+- Luckperms - any version - Required for many features, including things like the scoreboard display
 
 ---
 
 ### MINECRAFT VERSION
- - API Compatible - Spigot 1.17.1+
- - Latest tested - 1.21.4
+ - API Compatible - PaperMC 1.21.11+
+ - Latest tested - 26.2
 
 ---
 
@@ -33,7 +33,9 @@ Permission format to prevent people from collecting multiple of the same quest. 
 - `/quest help`  
   Lists the 3 player commands if they are not holding a scroll. If they are holding a scroll defined with help lines in the config it will then display those help lines.  
 - `/quest claim`  
-  Allows a player to claim the reward from a completed quest. This removes the quest scroll in the process. The scroll is required to be in the players main hand to use.  
+  Allows a player to claim the reward from a completed quest. This removes the quest scroll in the process. The scroll is required to be in the players main hand to use.
+- `/quest display [full | compact | off]`  
+  Allows a player to toggle the display mode for showing a quest in their scoreboard spot. If no mode is specified, it toggles between off and compact.
 - `/quest expiry`  
   Checks how long you have left to complete the scroll in your main hand. Returns a number in hours.  
 - `/quest secret <code>`  
@@ -308,7 +310,7 @@ region: true
 
 ### Movement
 Movement allows for defining statistic based trackers which are mostly movement trackers but can also include things like bell ringing. When specifying values for this option, write them all on 1 line with commas seperating, no spaces.  
-Available values: `cake` `shield` `climb` `sneak` `fall` `sprint` `swim` `walk` `boat` `fly` `horse` `minecart` `pig` `strider` `jump` `ring`  
+Available values: `cake` `shield` `climb` `sneak` `fall` `sprint` `swim` `walk` `boat` `fly` `horse` `minecart` `pig` `strider` `jump` `ring` `nautilus` `ghast`    
 Tracker format for these can be found below.  
 **Example:**
 ```yaml
@@ -331,14 +333,14 @@ coords: true
 ```
 
 ### Effect Modifiers
-Modifiers allow you to define effects players must be under to complete objectives on the scroll. For example you can add modifiers to say that a player must have slow falling and blindness to complete the objectives. To do this you do not need to set a configuration option but instead just add it as the second or third line on the scroll as seen below.  
+Modifiers allow you to define specific conditions for completing objectives. These can effects players must be under, things they must be riding, or armour they must be wearing. For example you can add modifiers to say that a player must have slow falling and blindness to complete the objectives. To do this you do not need to set a configuration option but instead just add it as the second or third line on the scroll as seen below.  
 **Example:**
 ```yaml
 ring:
   name: 'Wildcard Quest Scroll'
   lines:
     - <player>'s Quest Scroll
-    - 'Modifiers: Blindness, Slow Falling'
+    - 'Modifiers: Blindness, Slow Falling, Golden Helmet, Ride A Pig'
     - <break>
     - <empty>
     - '&fChop 10 Oak Logs: 0'
@@ -349,7 +351,31 @@ ring:
   rewards:
     - gquest wildcard wildcard1 <player>
 ```
-The available effects are any a player can have. They must be the name of the effect as seen when applying it using the `/effect` command in game. For effects with underscores instead use a space as seen above with `Slow Falling`.
+- The available effects are any a player can have. They must be the name of the effect as seen when applying it using the `/effect` command in game. For effects with underscores instead use a space as seen above with `Slow Falling`.
+- The available armour types that can be specified are any that contain `helmet` `chesplate` `leggings` or `boots`
+- The available things a player can ride could be anything a player could mount. Things like `horse` `happy ghast` `minecart` `nautilus` and more
+
+### Hidden Modifiers
+Just like regular modifiers, these require a user to meet a certain condition before objectives track. To configure a hidden modifier you still need to add the `Modifiers: ` line on a scroll but it must contain the word secret somewhere in it.
+**Example:**
+```yaml
+ring:
+  name: 'Wildcard Quest Scroll'
+  lines:
+    - <player>'s Quest Scroll
+    - 'Modifiers: Its a secret, shhh...'
+    - <break>
+    - <empty>
+    - '&fChop 10 Oak Logs: 0'
+    - '&f<movement>'
+    - <empty>
+    - <break>
+    - Use /quest help | for quest info
+  rewards:
+    - gquest wildcard wildcard1 <player>
+  hiddenModifiers: Golden Chestplate
+```
+In this example a user would need to be wearing a golden chestplate to complete the quest objectives.
 
 ### Biome Modifiers
 Biome modifiers allow you to define biomes players must be in to complete objectives on the scroll. For example you can add biomes to say that a player must be in the taiga or plains biome to complete the objectives. To do this you do not need to set a configuration option but instead just add it as the second or third line on the scroll as seen below.  
@@ -557,12 +583,22 @@ Swim x Blocks: 0
 Walk x Blocks: 0
 Travel  x Blocks In A Boat: 0
 Fly x Blocks: 0
-Travel x Blocks On A Horse: 0
 Travel  x Blocks In A Minecart: 0
 Travel  x Blocks On A Pig: 0
+Travel x Blocks On A Nautilus: 0
 Travel x Blocks On A Strider: 0
+Travel x Blocks On A Happy Ghast: 0
 Jump x Times: 0
 Ring x Bells: 0
+```
+Horse movement options:
+```
+Travel x Blocks On A Horse: 0
+Travel x Blocks On A Camel: 0
+Travel x Blocks On A Donkey: 0
+Travel x Blocks On A Llama: 0
+Travel x Blocks On A Zombie Horse: 0
+Travel x Blocks On A Skeleton Horse: 0
 ```
 
 ### Shearing
@@ -772,6 +808,21 @@ plugins
 ---
 
 # Changelog
+### 1.10
+Added the ability for a quest to display in the scoreboard slot. This can be managed by players using `/quest display`   
+Added the `hiddenModifiers` option to allow you to attach modifiers that users cannot see   
+Added nautilus riding tracking and allow tracking of different nautilus types   
+Added happy ghast riding tracking  
+Added new modifiers allowing you to force people to have to ride something or wear specific armour while completing a quest  
+Changed `cquest` commands to work while the quest is in a players main hand  
+Added tracking traveling distances on different horse types. Things like `donkey` `camel` and more count as horses  
+Fixed a problem stopping biome objectives from being able to be coloured  
+Fixed a problem stopping the objective text after the `: ` from being able to be coloured  
+Fixed a problem allowing shearing and milking of ghasts counting towards objectives for happy ghasts  
+Fixed a problem where chat objectives would cause a chat error and cause the scroll to disappear if the objective was the last one  
+Changed from using the Minecraft jump stat for tracking jumps to a PaperMC playerJumpEvent listener
+Moved to PaperAPI - @Zumbuh
+Fixed and did some other cool stuff - @Zumbuh
 ### 1.9
 Added the ability to control which biomes quests can be completed in.
 ### 1.8.4

@@ -8,6 +8,7 @@ import com.jagsnet.minecraft.plugins.quests.trackers.listeners.*;
 import com.jagsnet.minecraft.plugins.quests.trackers.scheduledTasks.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.mozilla.javascript.ast.Jump;
 
 public final class Quests extends JavaPlugin {
     private static Quests instance;
@@ -41,6 +42,7 @@ public final class Quests extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Strange(), this);
         getServer().getPluginManager().registerEvents(new Chat(), this);
         getServer().getPluginManager().registerEvents(new MoveToOffhand(), this);
+        getServer().getPluginManager().registerEvents(new Jumping(), this);
 
         // Schedule check for player movement
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -78,6 +80,11 @@ public final class Quests extends JavaPlugin {
             @Override
             public void run() { Coords.track(); }
         }, 5L, 100L);
+
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() { ScoreboardDisplay.showScoreboard(); }
+        }, 6L, 100L);
 
         // Register commands for quests
         this.getCommand("quest").setExecutor(new Main());

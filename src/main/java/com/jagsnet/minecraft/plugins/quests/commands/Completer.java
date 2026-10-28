@@ -93,24 +93,32 @@ public class Completer implements CommandExecutor {
                 return true;
             }
 
-            if (Scroll.isScrollOff(player)) {
-                ItemMeta offHandItem = player.getInventory().getItemInOffHand().getItemMeta();
+            if (Scroll.isScrollMain(player) || Scroll.isScrollOff(player)) {
+                boolean isScrollOff = Scroll.isScrollOff(player);
+                ItemMeta offHandItem;
+                if (isScrollOff) {
+                    offHandItem = player.getInventory().getItemInOffHand().getItemMeta();
+                } else {
+                    offHandItem = player.getInventory().getItemInMainHand().getItemMeta();
+                }
+
                 String entity = args[2].toLowerCase();
                 String entity2 = args[3].toLowerCase();
                 int loreLength = offHandItem.getLore().size();
-                ArrayList<String> lore = (ArrayList<String>) player.getInventory().getItemInOffHand().getItemMeta().getLore();
+                ArrayList<String> lore = (ArrayList<String>) offHandItem.getLore();
 
                 for (int i = 0; i < loreLength; i++) {
                     String line = Strings.cleanLore(lore.get(i), false, false);
                     if (line.contains(entity) &&
                             line.contains(entity2) &&
                             line.contains("incomplete")) {
-                        if (Completion.updateTxtLine(lore, player, i, true)) {
+                        if (Completion.updateTxtLine(lore, player, i, isScrollOff)) {
                             return true;
                         }
                     }
                 }
             }
+
             return true;
         }
 
@@ -133,13 +141,19 @@ public class Completer implements CommandExecutor {
                     amount =  parseInt(args[4]);
                 } catch (Exception e) {}
             }
+            if (Scroll.isScrollMain(player) || Scroll.isScrollOff(player)) {
+                boolean isScrollOff = Scroll.isScrollOff(player);
+                ItemMeta offHandItem;
+                if (isScrollOff) {
+                    offHandItem = player.getInventory().getItemInOffHand().getItemMeta();
+                } else {
+                    offHandItem = player.getInventory().getItemInMainHand().getItemMeta();
+                }
 
-            if (Scroll.isScrollOff(player)) {
-                ItemMeta offHandItem = player.getInventory().getItemInOffHand().getItemMeta();
                 String entity = args[2].toLowerCase();
                 String entity2 = args[3].toLowerCase();
                 int loreLength = offHandItem.getLore().size();
-                ArrayList<String> lore = (ArrayList<String>) player.getInventory().getItemInOffHand().getItemMeta().getLore();
+                ArrayList<String> lore = (ArrayList<String>) offHandItem.getLore();
 
                 for (int i = 0; i < loreLength; i++) {
                     String line = Strings.cleanLore(lore.get(i), false, false);

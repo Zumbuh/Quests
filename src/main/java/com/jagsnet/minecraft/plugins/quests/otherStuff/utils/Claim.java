@@ -95,7 +95,10 @@ public class Claim {
                     }
                     e++;
                 }
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), rewardName);
+                String finalRewardName = rewardName;
+                Bukkit.getScheduler().runTask(Quests.getInstance(), () -> {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalRewardName);
+                });
                 Messaging.log("Quests ran: " + rewardName);
             }
         } else {

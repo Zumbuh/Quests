@@ -56,8 +56,18 @@ public class Strange implements Listener {
 
             for (int i = 0; i < lore.size(); i++) {
                 String line = Strings.cleanLore(lore.get(i), true, false);
-                if ((line.contains(mainHandItem) &&
-                        line.contains(" " + entity))) {
+                if (    // all mobs
+                        (line.contains(mainHandItem) &&
+                        line.contains(" " + entity) &&
+                        line.split(" ", 0).length == entity.split(" ", 0).length + 3)
+                        ||
+                        // wild mobs
+                        (Completion.isWild(event.getRightClicked().getEntitySpawnReason()) &&
+                        line.contains(" wild ") &&
+                        line.contains(mainHandItem) &&
+                        line.contains(" " + entity) &&
+                        line.split(" ", 0).length == entity.split(" ", 0).length + 4)
+                ) {
                     if (Completion.updateNumLine(lore, player, 1, i)) {
                         if (mainHandItem.equalsIgnoreCase("milk") && entity.equalsIgnoreCase("cow")) return;
                         event.getRightClicked().getPersistentDataContainer().set(key, PersistentDataType.LONG, System.currentTimeMillis() + 30000);

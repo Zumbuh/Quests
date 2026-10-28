@@ -9,6 +9,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.ArrayList;
@@ -46,8 +48,23 @@ public class MobKills implements Listener {
                             entity = "baby " + entity;
                         }
                     }
+
+                    SpawnReason spawnReason = event.getEntity().getEntitySpawnReason();
                     for (int i = 0; i < lore.size(); i++) {
                         String line = Strings.cleanLore(lore.get(i), true, false);
+
+                        // wild mobs
+                        if (line.contains(" wild ") && (line.contains(" " + entity) &&
+                                line.split(" ", 0).length ==
+                                        entity.split(" ", 0).length + 4)  && line.contains("kill")) {
+                            if (Completion.isWild(spawnReason)) {
+                                if (Completion.updateNumLine(lore, player, 1, i)) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        // all mobs
                         if ((line.contains(" " + entity) &&
                                 line.split(" ", 0).length ==
                                 entity.split(" ", 0).length + 3)  && line.contains("kill")) {

@@ -6,11 +6,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,8 +26,16 @@ public class Completion {
             if (lore.get(lineNum).contains(strike)) {return false;}
             if (!parseModifiers(p, lore)) {return false;}
             String[] loreLine = lore.get(lineNum).split(": ", 0);
-            int x = parseInt(loreLine[1]) + newNum;
-            lore.set(lineNum, loreLine[0] + ": " + x);
+
+
+            int lastCodeIndex = loreLine[1].lastIndexOf('§');
+            int textStartIndex = (lastCodeIndex != -1) ? lastCodeIndex + 2 : 0;
+
+            String prefix = loreLine[1].substring(0, textStartIndex);
+            String number = loreLine[1].substring(textStartIndex);
+
+            int x = parseInt(number) + newNum;
+            lore.set(lineNum, loreLine[0] + ": " + prefix + x);
             p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(lore.get(lineNum)));
 
             try {
@@ -39,7 +49,13 @@ public class Completion {
                 }
             } catch (Exception ee) {}
 
-            ItemStack itemStack = p.getInventory().getItemInOffHand();
+            boolean isOff = Scroll.isScrollOff(p);
+            ItemStack itemStack;
+            if (isOff) {
+                itemStack = p.getInventory().getItemInOffHand();
+            } else {
+                itemStack = p.getInventory().getItemInMainHand();
+            }
             ItemMeta m = itemStack.getItemMeta();
             m.setLore(lore);
             itemStack.setItemMeta(m);
@@ -61,7 +77,13 @@ public class Completion {
             if (!parseModifiers(p, lore)) {return false;}
             if (!parseBiomes(p, lore)) {return false;}
             String[] loreLine = lore.get(lineNum).split(": ", 0);
-            lore.set(lineNum, loreLine[0] + ": Complete");
+
+            int lastCodeIndex = loreLine[1].lastIndexOf('§');
+            int textStartIndex = (lastCodeIndex != -1) ? lastCodeIndex + 2 : 0;
+
+            String prefix = loreLine[1].substring(0, textStartIndex);
+
+            lore.set(lineNum, loreLine[0] + ": " + prefix + "Complete");
             p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(lore.get(lineNum)));
             if (lore.get(lineNum).contains("Complete")) {
                 NamespacedKey key = new NamespacedKey(Quests.getInstance(), "locked");
@@ -96,10 +118,69 @@ public class Completion {
         for (int i = 1; i < 3; i++) {
             String s = ChatColor.stripColor(lore.get(i));
             if (s.contains("Modifiers: ")) {
-                String[] modList = s.split(": ")[1].toUpperCase().replace(" ", "_").split(",_");
-                for (String mods : modList) {
-                    if (!p.hasPotionEffect(PotionEffectType.getByName(mods))) {
-                        return false;
+                String[] modList = {""};
+
+                // get secret modifier list
+                if (s.toLowerCase().contains("secret")) {
+                    NamespacedKey key = new NamespacedKey(Quests.getInstance(), "rewardLocation");
+                    ItemStack itemStack;
+                    if (Scroll.isScrollOff(p)) {
+                        itemStack = p.getInventory().getItemInOffHand();
+                    } else {
+                        itemStack = p.getInventory().getItemInMainHand();
+                    }
+                    ItemMeta questMeta = itemStack.getItemMeta();
+                    if (questMeta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+                        String[] location = questMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING).split("_");
+                        Configs.load(location[0]);
+                        modList = Configs.get().getString(location[1] + ".hiddenModifiers").toLowerCase().split(", ");
+                    }
+                // Else do regular modifier list
+                } else {
+                    modList = s.split(": ")[1].toLowerCase().split(", ");
+                }
+                for (String modifier : modList) {
+
+                    // Wear X modifier
+                    if (modifier.contains("helmet")) {
+                        if (!(p.getInventory().getHelmet().getType().toString().equals(modifier.toUpperCase().replace(" ", "_")))) {
+                            return false;
+                        }
+                    }
+                    if (modifier.contains("chestplate")) {
+                        if (!(p.getInventory().getChestplate().getType().toString().equals(modifier.toUpperCase().replace(" ", "_")))) {
+                            return false;
+                        }
+                    }
+                    if (modifier.contains("leggings")) {
+                        if (!(p.getInventory().getLeggings().getType().toString().equals(modifier.toUpperCase().replace(" ", "_")))) {
+                            return false;
+                        }
+                    }
+                    if (modifier.contains("boots")) {
+                        if (!(p.getInventory().getBoots().getType().toString().equals(modifier.toUpperCase().replace(" ", "_")))) {
+                            return false;
+                        }
+                    }
+
+                    // Ride x modifiers
+                    if (modifier.contains("ride a ")) {
+                        String mob = modifier.replace("ride a ", "");
+                        if (p.getVehicle() != null) {
+                            if (!(p.getVehicle().getType().toString().equals(mob.toUpperCase().replace(" ", "_")))) {
+                                return false;
+                            }
+                        } else {
+                            // return false if ride a modifier exists and not riding
+                            return false;
+                        }
+                    }
+
+                    // Potion modifiers
+                    if (PotionEffectType.getByName(modifier.toUpperCase().replace(" ", "_")) != null) {
+                        if (!p.hasPotionEffect(PotionEffectType.getByName(modifier.toUpperCase().replace(" ", "_")))) {
+                            return false;
+                        }
                     }
                 }
             }
@@ -173,6 +254,16 @@ public class Completion {
         }
 
         if (totalLines == totalComplete && totalComplete != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isWild(CreatureSpawnEvent.SpawnReason spawnReason) {
+        if (spawnReason != CreatureSpawnEvent.SpawnReason.SPAWNER &&
+                spawnReason != CreatureSpawnEvent.SpawnReason.COMMAND &&
+                spawnReason != CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER &&
+                spawnReason != CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) {
             return true;
         }
         return false;

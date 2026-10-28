@@ -52,6 +52,7 @@ public class Main implements CommandExecutor {
                 Messaging.sendMessage(player, boldGold + "---General Quest Help---", false);
                 Messaging.sendMessage(player, boldGold + "/quest help " + white + "lists quest specific help if available.", false);
                 Messaging.sendMessage(player, boldGold + "/quest claim " + white + "claims the rewards on a quest.", false);
+                Messaging.sendMessage(player, boldGold + "/quest display [full | compact | off] " + white + "toggles quest display mode.", false);
                 Messaging.sendMessage(player, boldGold + "/quest expiry " + white + "checks when a quest expires.", false);
                 Messaging.sendMessage(player, boldGold + "/quest list " + white + "lists quests available to collect.", false);
                 Messaging.sendMessage(player, boldGold + "/quest secret <code> " + white + "tests the supplied code with the one defined secretly on the scroll IF the scroll has one.", false);
@@ -329,12 +330,14 @@ public class Main implements CommandExecutor {
                                     int randomNum = ThreadLocalRandom.current().nextInt(0, list.size());
                                     rewardName = rewardName.replace("<" + listName + ">", (CharSequence) list.get(randomNum));
                                 }
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), rewardName);
+                                String finalRewardName = rewardName;
+                                Bukkit.getScheduler().runTask(Quests.getInstance(), () -> {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalRewardName);
+                                });
                                 Messaging.log("Quests ran: " + rewardName);
                             }
                         }
                     }
-
                     meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "Claimed");
                     meta.setLore(lore);
                     itemStack.setItemMeta(meta);
@@ -411,8 +414,15 @@ public class Main implements CommandExecutor {
                         String permissionName = Configs.getGlobal().getString("commands." + command + ".permissionName");
                         String description = Configs.getGlobal().getString("commands." + command + ".description");
 
-                        SimpleDateFormat df = new SimpleDateFormat(dateFormat);
-                        String date = df.format(new Date());
+                        SimpleDateFormat df;
+                        String date;
+
+                        if (dateFormat.equals("infinite")) {
+                            date = dateFormat;
+                        } else {
+                            df = new SimpleDateFormat(dateFormat);
+                            date = df.format(new Date());
+                        }
 
                         if (!player.hasPermission("quest." + permissionName + "." + date)) {
                             //Messaging.sendUnformattedMessage(player, boldGreen + "/quest " + command + " - " + white + description);
@@ -440,8 +450,15 @@ public class Main implements CommandExecutor {
                 String quest = Configs.getGlobal().getString("commands." + command + ".quest");
                 String denyMessage = Configs.getGlobal().getString("commands." + command + ".denyMessage");
 
-                SimpleDateFormat df = new SimpleDateFormat(dateFormat);
-                String date = df.format(new Date());
+                SimpleDateFormat df;
+                String date;
+
+                if (dateFormat.equals("infinite")) {
+                    date = dateFormat;
+                } else {
+                    df = new SimpleDateFormat(dateFormat);
+                    date = df.format(new Date());
+                }
 
                 if (player.hasPermission("quest." + permissionName + "." + date)) {
                     Messaging.sendMessage(player, denyMessage);
@@ -450,12 +467,56 @@ public class Main implements CommandExecutor {
 
                 String[] genStuff = {quest.split("_")[0], quest.split("_")[1], player.getName()};
 
-                if (Generators.genScroll(genStuff, player)) {
+                if (!dateFormat.equals("infinite") && Generators.genScroll(genStuff, player)) {
                     Perms.setPerm(player.getName(), "quest." + permissionName + "." + date, permissionCooldown);
                     //Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission settemp quest." + permissionName + "." + date + " true " + permissionCooldown);
                     return true;
+                } else if (dateFormat.equals("infinite") && Generators.genScroll(genStuff, player)) {
+                    Perms.setPermPerm(player.getName(), "quest." + permissionName + "." + date);
                 }
 
+                return true;
+            }
+
+            // ------------------------------------------------------
+            // ------------------ Set Scoreboard --------------------
+            // ------------------------------------------------------
+            if (args.length >= 1 && args[0].equalsIgnoreCase("display")) {
+                if (Scroll.isScrollOff(player)) {
+
+                    // set display mode
+                    if (args.length > 1) {
+                        switch (args[1]) {
+                            case "compact", "on":
+                                Perms.setDisplayPerm(player, "compact");
+                                Messaging.sendMessage(player, "Showing quest objectives in compact mode");
+                                break;
+                            case "full":
+                                Perms.setDisplayPerm(player, "full");
+                                Messaging.sendMessage(player, "Showing quest objectives in full mode");
+                                break;
+                            case "off":
+                                Perms.setDisplayPerm(player, "off");
+                                Messaging.sendMessage(player, "Hiding quest objectives");
+                                break;
+                            default:
+                                // if invalid mode specified, do nothing
+                                Messaging.sendMessage(player, "Incorrect mode specified, possible values are compact or full");
+                                return true;
+                        }
+                        return true;
+                    }
+
+                    // If no mode specified, toggle instead
+                    if (player.hasPermission("quest.display.compact") || player.hasPermission("quest.display.compact")) {
+                        Perms.setDisplayPerm(player, "off");
+                        Messaging.sendMessage(player, "Hiding quest objectives");
+                    } else {
+                        Perms.setDisplayPerm(player, "compact");
+                        Messaging.sendMessage(player, "Showing quest objectives in compact mode");
+                    }
+
+                }
                 return true;
             }
 

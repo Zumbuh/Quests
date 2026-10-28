@@ -46,6 +46,6 @@ public class Strings {
     }
 
     public static String questVersion(){
-        return "1.9";
+        return "1.10";
     }
 }
